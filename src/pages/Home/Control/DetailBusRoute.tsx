@@ -18,9 +18,6 @@ const DetailBusRoute = ({ data, setSelectedRoute }: any) => {
                 <strong>Tên tuyến:</strong>
               </li>
               <li>
-                <strong>Loại tuyến:</strong>
-              </li>
-              <li>
                 <strong>Giá vé:</strong>
               </li>
               <li>

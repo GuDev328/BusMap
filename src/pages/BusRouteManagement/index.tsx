@@ -47,40 +47,40 @@ export const BusRouteManagement = () => {
 
   const columns = [
     {
-      title: 'Name',
+      title: 'STT',
+      dataIndex: 'stt',
+      key: 'stt',
+      render: (text: any, record: any, index: number) => <a>{index + 1}</a>,
+    },
+    {
+      title: 'Tuyến số',
+      dataIndex: 'number',
+      key: 'number',
+    },
+    {
+      title: 'Tên tuyến',
       dataIndex: 'name',
       key: 'name',
-      render: (text: any) => <a>{text}</a>,
     },
     {
-      title: 'Age',
-      dataIndex: 'age',
-      key: 'age',
+      title: 'Đơn vị',
+      key: 'unit',
+      dataIndex: 'unit',
     },
     {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
+      title: 'Giá vé',
+      key: 'ticketPrice',
+      dataIndex: 'ticketPrice',
     },
     {
-      title: 'Tags',
-      key: 'tags',
-      dataIndex: 'tags',
-      render: (_: any, { tags }: any) => (
-        <>
-          {tags.map((tag: any) => {
-            let color = tag.length > 5 ? 'geekblue' : 'green';
-            if (tag === 'loser') {
-              color = 'volcano';
-            }
-            return (
-              <Tag color={color} key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      ),
+      title: 'Độ dài tuyến',
+      key: 'length',
+      dataIndex: 'length',
+    },
+    {
+      title: 'Thời gian chạy',
+      key: 'time',
+      dataIndex: 'time',
     },
     {
       title: 'Hành động',
