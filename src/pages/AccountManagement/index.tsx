@@ -2,6 +2,7 @@ import {
   Button,
   Col,
   Flex,
+  message,
   Modal,
   Row,
   Space,
@@ -11,51 +12,53 @@ import {
 } from 'antd';
 
 import { Card, PageHeader } from '../../components';
-import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
+import {
+  DeleteOutlined,
+  EditOutlined,
+  EyeOutlined,
+  PlusOutlined,
+} from '@ant-design/icons';
 import { COLOR } from '../../App';
 import DrawerCRU from './Handle/DrawerCRU';
-import { useState } from 'react';
-
-const data = [
-  {
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-    tags: ['nice', 'developer'],
-  },
-  {
-    key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-    tags: ['loser'],
-  },
-  {
-    key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sydney No. 1 Lake Park',
-    tags: ['cool', 'teacher'],
-  },
-];
+import { useEffect, useState } from 'react';
+import { deleteAccount, getAllAccount } from '../../services/accountServices';
 
 export const AccountManagementPage = () => {
+  const [data, setData] = useState<any>([]);
   const [open, setOpen] = useState(false);
   const [id, setId] = useState<string | undefined>(undefined);
   const [isViewMode, setIsViewMode] = useState(false);
+  const [updateTableData, setUpdateTableData] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const paginatedData = data.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
+  const fetchData = async () => {
+    const res = await getAllAccount();
+    setData(res);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [updateTableData]);
 
   const columns = [
     {
       title: 'STT',
       dataIndex: 'stt',
       key: 'stt',
+      width: 50,
       render: (text: any, record: any, index: number) => index + 1,
     },
     {
       title: 'Họ tên',
-      dataIndex: 'name',
-      key: 'name',
+      dataIndex: 'username',
+      key: 'username',
     },
     {
       title: 'Email',
@@ -66,6 +69,9 @@ export const AccountManagementPage = () => {
       title: 'Quyền',
       dataIndex: 'role',
       key: 'role',
+      render: (text: any) => {
+        return text === 0 ? 'Master Admin' : 'Admin';
+      },
     },
 
     {
@@ -77,17 +83,25 @@ export const AccountManagementPage = () => {
           size="middle"
           style={{ display: 'flex', justifyContent: 'center' }}
         >
+          <EyeOutlined
+            style={{ color: '#165dff' }}
+            onClick={() => {
+              setOpen(true);
+              setId(record.id);
+              setIsViewMode(true);
+            }}
+          />
           <EditOutlined
             style={{ color: '#165dff' }}
             onClick={() => {
               setOpen(true);
-              setId(record.key);
+              setId(record.id);
               setIsViewMode(false);
             }}
           />
           <DeleteOutlined
             style={{ color: '#ff4d4f' }}
-            onClick={() => handleDelete(record.key)}
+            onClick={() => handleDelete(record.id)}
           />
         </Space>
       ),
@@ -98,7 +112,12 @@ export const AccountManagementPage = () => {
     Modal.confirm({
       title: 'Bạn có chắc chắn muốn xóa tài khoản này không?',
       onOk: () => {
-        console.log('ok');
+        deleteAccount(id).then((res: any) => {
+          // if (res.status === 200) {
+          //   message.success('Xóa tài khoản thành công');
+          //   setUpdateTableData(!updateTableData);
+          // }
+        });
       },
     });
   };
@@ -120,9 +139,20 @@ export const AccountManagementPage = () => {
         </Button>
         <Table
           bordered
+          pagination={{
+            current: currentPage,
+            pageSize: pageSize,
+            total: data.length,
+            showSizeChanger: true,
+            locale: { items_per_page: '/trang' },
+            onChange: (page, size) => {
+              setCurrentPage(page);
+              setPageSize(size);
+            },
+          }}
           style={{ borderRadius: '15px' }}
           columns={columns}
-          dataSource={data}
+          dataSource={paginatedData}
         />
       </Flex>
 

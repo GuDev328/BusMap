@@ -6,6 +6,7 @@ import {
   InputNumber,
   Row,
   Select,
+  Tabs,
   TimePicker,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
@@ -22,6 +23,12 @@ interface DrawerCRUProps {
 const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
   const [renderMap, setRenderMap] = useState(false);
   const [numberBusStop, setNumberBusStop] = useState([
+    {
+      id: 1,
+      name: '',
+    },
+  ]);
+  const [numberBusStopReturn, setNumberBusStopReturn] = useState([
     {
       id: 1,
       name: '',
@@ -126,38 +133,78 @@ const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
             >
               <TimePicker.RangePicker placeholder={['Từ', 'Đến']} />
             </Form.Item>
-            {numberBusStop.map((item, index) => (
-              <Flex key={index}>
-                <Form.Item
-                  style={{ flex: 1 }}
-                  name={['busStop', index]}
-                  rules={[
-                    { required: true, message: 'Vui lòng chọn điểm dừng' },
-                  ]}
-                  label={`Điểm dừng`}
-                >
-                  <Select options={mockBusStop} />
-                </Form.Item>
+            <Tabs>
+              <Tabs.TabPane tab="Tuyến đi" key="1">
+                {numberBusStop.map((item, index) => (
+                  <Flex key={index}>
+                    <Form.Item
+                      style={{ flex: 1 }}
+                      name={['busStop', index]}
+                      rules={[
+                        { required: true, message: 'Vui lòng chọn điểm dừng' },
+                      ]}
+                      label={`Điểm dừng`}
+                    >
+                      <Select options={mockBusStop} />
+                    </Form.Item>
+                    <Button
+                      onClick={() =>
+                        setNumberBusStop(
+                          numberBusStop.filter((item) => item.id !== index + 1)
+                        )
+                      }
+                      style={{ border: 'none' }}
+                      icon={<DeleteOutlined style={{ color: '#ff4d4f' }} />}
+                    ></Button>
+                  </Flex>
+                ))}
                 <Button
                   onClick={() =>
-                    setNumberBusStop(
-                      numberBusStop.filter((item) => item.id !== index + 1)
-                    )
+                    setNumberBusStop([
+                      ...numberBusStop,
+                      { id: numberBusStop.length + 1, name: '' },
+                    ])
                   }
-                  style={{ border: 'none' }}
-                  icon={<DeleteOutlined style={{ color: '#ff4d4f' }} />}
+                  icon={<PlusOutlined />}
                 ></Button>
-              </Flex>
-            ))}
-            <Button
-              onClick={() =>
-                setNumberBusStop([
-                  ...numberBusStop,
-                  { id: numberBusStop.length + 1, name: '' },
-                ])
-              }
-              icon={<PlusOutlined />}
-            ></Button>
+              </Tabs.TabPane>
+              <Tabs.TabPane tab="Tuyến về" key="2">
+                {numberBusStopReturn.map((item, index) => (
+                  <Flex key={index}>
+                    <Form.Item
+                      style={{ flex: 1 }}
+                      name={['busStopReturn', index]}
+                      rules={[
+                        { required: true, message: 'Vui lòng chọn điểm dừng' },
+                      ]}
+                      label={`Điểm dừng`}
+                    >
+                      <Select options={mockBusStop} />
+                    </Form.Item>
+                    <Button
+                      onClick={() =>
+                        setNumberBusStopReturn(
+                          numberBusStopReturn.filter(
+                            (item) => item.id !== index + 1
+                          )
+                        )
+                      }
+                      style={{ border: 'none' }}
+                      icon={<DeleteOutlined style={{ color: '#ff4d4f' }} />}
+                    ></Button>
+                  </Flex>
+                ))}
+                <Button
+                  onClick={() =>
+                    setNumberBusStopReturn([
+                      ...numberBusStopReturn,
+                      { id: numberBusStopReturn.length + 1, name: '' },
+                    ])
+                  }
+                  icon={<PlusOutlined />}
+                ></Button>
+              </Tabs.TabPane>
+            </Tabs>
           </Form>
           <Button
             disabled={!numberBusStop.length}

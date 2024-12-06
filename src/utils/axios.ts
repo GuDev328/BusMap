@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:3030';
+const BASE_URL = 'http://localhost:5189';
 
 const axiosIns = axios.create({
   baseURL: BASE_URL,
@@ -8,7 +8,7 @@ const axiosIns = axios.create({
 
 axiosIns.interceptors.request.use(
   (config) => {
-    config.headers['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
+    // config.headers['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
     return config;
   },
   (error) => {

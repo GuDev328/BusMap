@@ -99,12 +99,12 @@ export const NotificationManagementPage = () => {
           pagination={{
             current: currentPage,
             pageSize: pageSize,
-            total: allData.length, // Tổng số mục
-            showSizeChanger: true, // Cho phép đổi số mục mỗi trang
+            total: allData.length,
+            showSizeChanger: true,
             locale: { items_per_page: '/trang' },
             onChange: (page, size) => {
-              setCurrentPage(page); // Cập nhật trang hiện tại
-              setPageSize(size); // Cập nhật số mục mỗi trang
+              setCurrentPage(page);
+              setPageSize(size);
             },
           }}
           bordered
