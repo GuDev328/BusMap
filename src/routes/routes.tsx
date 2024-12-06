@@ -15,6 +15,7 @@ import React, { ReactNode, useEffect } from 'react';
 import { AccountManagementPage } from '../pages/AccountManagement';
 import { BusRouteManagement } from '../pages/BusRouteManagement';
 import { BusStopManagement } from '../pages/BusStopManagement';
+import { NotificationManagementPage } from '../pages/NotificationManagement';
 
 // Custom scroll restoration function
 export const ScrollToTop: React.FC = () => {
@@ -134,6 +135,18 @@ const router = createBrowserRouter([
         index: true,
         path: '',
         element: <BusStopManagement />,
+      },
+    ],
+  },
+  {
+    path: '/notification-management',
+    element: <PageWrapper children={<DashboardLayout />} />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        index: true,
+        path: '',
+        element: <NotificationManagementPage />,
       },
     ],
   },

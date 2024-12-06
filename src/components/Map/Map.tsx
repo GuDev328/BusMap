@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   MapContainer,
   TileLayer,
@@ -11,7 +11,7 @@ import {
 } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import { Select, Spin } from 'antd';
+import { Select, Spin, Button } from 'antd';
 import { debounce } from 'lodash'; // Import debounce từ lodash
 
 const Map = ({ width, height, onChangeLocation }) => {
@@ -218,13 +218,32 @@ const Map = ({ width, height, onChangeLocation }) => {
   const getLocationLabelFrom = (value) => {
     return locationsFrom.find((location) => location.value === value)?.label;
   };
+  const centerTest = [21.064597777865025, 105.81584277472857];
+  const mapRef = useRef();
 
+  const handleFocus = () => {
+    const map = mapRef.current;
+    if (map) {
+      const position = centerTest; // Ví dụ: tọa độ Hà Nội
+      map.flyTo(position, 13); // `13` là zoom level
+    }
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      handleFocus();
+    }, 5000);
+  }, []);
   return (
     <div>
       <MapContainer
         //dragging={false}
-        center={currentPosition ? currentPosition : [21.0701, 105.772]} // Vị trí trung tâm Nhổn
+        center={[21.0701, 105.772]} // Vị trí trung tâm Nhổn
         zoom={13}
+        ref={mapRef}
+        whenCreated={(mapInstance) => {
+          mapRef.current = mapInstance; // Lưu instance map vào ref
+        }}
         style={{ width: width, height: height }}
       >
         <TileLayer

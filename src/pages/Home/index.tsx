@@ -21,7 +21,7 @@ export const HomePage = () => {
             position: 'absolute',
             padding: '15px',
             top: '60px',
-            left: '10px',
+            left: '00px',
             zIndex: '1000',
           }}
         >
@@ -38,7 +38,11 @@ export const HomePage = () => {
             zIndex: '999',
           }}
         >
-          <Map width="100%" height="calc(100vh - 60px)" />
+          <Map
+            width="100%"
+            height="calc(100vh - 60px)"
+            onChangeLocation={() => {}}
+          />
         </div>
       </div>
     </div>

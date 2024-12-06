@@ -47,41 +47,27 @@ export const AccountManagementPage = () => {
 
   const columns = [
     {
-      title: 'Name',
+      title: 'STT',
+      dataIndex: 'stt',
+      key: 'stt',
+      render: (text: any, record: any, index: number) => index + 1,
+    },
+    {
+      title: 'Họ tên',
       dataIndex: 'name',
       key: 'name',
-      render: (text: any) => <a>{text}</a>,
     },
     {
-      title: 'Age',
-      dataIndex: 'age',
-      key: 'age',
+      title: 'Email',
+      dataIndex: 'email',
+      key: 'email',
     },
     {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
+      title: 'Quyền',
+      dataIndex: 'role',
+      key: 'role',
     },
-    {
-      title: 'Tags',
-      key: 'tags',
-      dataIndex: 'tags',
-      render: (_: any, { tags }: any) => (
-        <>
-          {tags.map((tag: any) => {
-            let color = tag.length > 5 ? 'geekblue' : 'green';
-            if (tag === 'loser') {
-              color = 'volcano';
-            }
-            return (
-              <Tag color={color} key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      ),
-    },
+
     {
       title: 'Hành động',
       key: 'action',

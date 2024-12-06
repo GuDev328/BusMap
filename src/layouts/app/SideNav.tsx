@@ -3,7 +3,7 @@ import { ConfigProvider, Layout, Menu, MenuProps, SiderProps } from 'antd';
 import {
   BoxPlotOutlined,
   GroupOutlined,
-  InfoCircleOutlined,
+  BellOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 import { Logo } from '../../components';
@@ -14,6 +14,7 @@ import {
   ROOTS_ACCOUNT_MANAGEMENT,
   ROOTS_BUS_ROUTE_MANAGEMENT,
   ROOTS_BUS_STOP_MANAGEMENT,
+  ROOTS_NOTIFICATION_MANAGEMENT,
 } from '../../constants/routes.ts';
 
 const { Sider } = Layout;
@@ -51,6 +52,11 @@ const items: MenuProps['items'] = [
     <Link to={ROOTS_BUS_STOP_MANAGEMENT}>Quản lý điểm dừng</Link>,
     'bus-stop-management',
     <GroupOutlined />
+  ),
+  getItem(
+    <Link to={ROOTS_NOTIFICATION_MANAGEMENT}>Quản lý thông báo</Link>,
+    'notification-management',
+    <BellOutlined />
   ),
 ];
 

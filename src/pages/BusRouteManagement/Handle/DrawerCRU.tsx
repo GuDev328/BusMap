@@ -62,7 +62,7 @@ const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
   };
   return (
     <Drawer
-      width={'90%'}
+      width={'100%'}
       title={
         isViewMode
           ? 'Xem chi tiết tuyến đường'

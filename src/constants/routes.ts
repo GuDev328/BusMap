@@ -25,7 +25,7 @@ const ROOTS_ERRORS = '/errors';
 export const ROOTS_ACCOUNT_MANAGEMENT = '/account-management';
 export const ROOTS_BUS_ROUTE_MANAGEMENT = '/bus-route-management';
 export const ROOTS_BUS_STOP_MANAGEMENT = '/bus-stop-management';
-
+export const ROOTS_NOTIFICATION_MANAGEMENT = '/notification-management';
 export const PATH_LANDING = {
   root: ROOTS_LANDING,
   why: '/why-us',
