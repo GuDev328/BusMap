@@ -24,14 +24,23 @@ interface DrawerCRUProps {
   isViewMode?: boolean;
   open: boolean;
   onClose: () => void;
+  setUpdateTableData: any;
 }
 
-const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
+const DrawerCRU = ({
+  open,
+  onClose,
+  id,
+  isViewMode,
+  setUpdateTableData,
+}: DrawerCRUProps) => {
   const [form] = Form.useForm();
+  const [passwordToEdit, setPasswordToEdit] = useState('');
   useEffect(() => {
     if (id) {
       getDetailAccount(id).then((res: IAccount) => {
         form.setFieldsValue(res);
+        setPasswordToEdit(res.password);
       });
     }
   }, [id, isViewMode]);
@@ -50,13 +59,19 @@ const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
       if (create.status === 201) {
         message.success('Tạo tài khoản thành công');
         handleClose();
+        setUpdateTableData((prev: boolean) => !prev);
       }
     } else {
-      const update = await updateAccount(dataForm as IUpdateAccount);
-      // if (update.status === 200) {
-      //   message.success('Cập nhật tài khoản thành công');
-      //   handleClose();
-      // }
+      const update = await updateAccount({
+        id,
+        password: passwordToEdit,
+        ...dataForm,
+      } as IUpdateAccount);
+      if (update.status === 204) {
+        message.success('Cập nhật tài khoản thành công');
+        handleClose();
+        setUpdateTableData((prev: boolean) => !prev);
+      }
     }
   };
 

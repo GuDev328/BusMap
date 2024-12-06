@@ -17,49 +17,35 @@ import DrawerCRU from './Handle/DrawerCRU';
 import { useEffect, useState } from 'react';
 import { getAllBusStop } from '../../services/busStopServices';
 
-const data = [
-  {
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-    tags: ['nice', 'developer'],
-  },
-  {
-    key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-    tags: ['loser'],
-  },
-  {
-    key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sydney No. 1 Lake Park',
-    tags: ['cool', 'teacher'],
-  },
-];
-
 export const BusStopManagement = () => {
+  const [data, setData] = useState([]);
   const [open, setOpen] = useState(false);
   const [id, setId] = useState<string | undefined>(undefined);
   const [isViewMode, setIsViewMode] = useState(false);
+  const [updateTableData, setUpdateTableData] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const paginatedData = data.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   const fetchData = async () => {
     const res = await getAllBusStop();
-    console.log(res);
+    setData(res);
   };
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [updateTableData]);
 
   const columns = [
     {
       title: 'STT',
       dataIndex: 'stt',
       key: 'stt',
+      width: 50,
       render: (text: any, record: any, index: number) => <a>{index + 1}</a>,
     },
     {
@@ -69,9 +55,16 @@ export const BusStopManagement = () => {
       render: (text: any) => <a>{text}</a>,
     },
     {
-      title: 'Toạ độ',
-      dataIndex: 'coordinate',
-      key: 'coordinate',
+      title: 'Vĩ độ',
+      dataIndex: 'lat',
+      key: 'lat',
+      width: 100,
+    },
+    {
+      title: 'Kinh độ',
+      dataIndex: 'lon',
+      key: 'lon',
+      width: 100,
     },
 
     {
@@ -87,13 +80,13 @@ export const BusStopManagement = () => {
             style={{ color: '#165dff' }}
             onClick={() => {
               setOpen(true);
-              setId(record.key);
+              setId(record.id);
               setIsViewMode(false);
             }}
           />
           <DeleteOutlined
             style={{ color: '#ff4d4f' }}
-            onClick={() => handleDelete(record.key)}
+            onClick={() => handleDelete(record.id)}
           />
         </Space>
       ),
@@ -128,11 +121,24 @@ export const BusStopManagement = () => {
           bordered
           style={{ borderRadius: '15px' }}
           columns={columns}
-          dataSource={data}
+          pagination={{
+            current: currentPage,
+            pageSize: pageSize,
+            total: data.length,
+            showTotal: (total) => `Tổng: ${total} điểm dừng`,
+            showSizeChanger: true,
+            locale: { items_per_page: '/trang' },
+            onChange: (page, size) => {
+              setCurrentPage(page);
+              setPageSize(size);
+            },
+          }}
+          dataSource={paginatedData}
         />
       </Flex>
 
       <DrawerCRU
+        setUpdateTableData={setUpdateTableData}
         open={open}
         onClose={() => setOpen(false)}
         id={id}

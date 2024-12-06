@@ -143,6 +143,7 @@ export const AccountManagementPage = () => {
             current: currentPage,
             pageSize: pageSize,
             total: data.length,
+            showTotal: (total) => `Tổng: ${total} tài khoản`,
             showSizeChanger: true,
             locale: { items_per_page: '/trang' },
             onChange: (page, size) => {
@@ -158,6 +159,7 @@ export const AccountManagementPage = () => {
 
       <DrawerCRU
         open={open}
+        setUpdateTableData={setUpdateTableData}
         onClose={() => setOpen(false)}
         id={id}
         isViewMode={isViewMode}

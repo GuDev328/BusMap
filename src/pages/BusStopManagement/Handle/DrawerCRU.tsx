@@ -1,26 +1,49 @@
 import { Button, Col, Drawer, Form, Input, message, Row } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import MapPicBusStop from '../../../components/Map/MapPicBusStop';
 import { DeleteOutlined } from '@ant-design/icons';
-import { createBusStop } from '../../../services/busStopServices';
+import {
+  createBusStop,
+  getDetailBusStop,
+  updateBusStop,
+} from '../../../services/busStopServices';
 
 interface DrawerCRUProps {
   id?: string;
   isViewMode?: boolean;
   open: boolean;
   onClose: () => void;
+  setUpdateTableData: any;
 }
 
-const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
+const DrawerCRU = ({
+  open,
+  onClose,
+  id,
+  isViewMode,
+  setUpdateTableData,
+}: DrawerCRUProps) => {
   const [form] = Form.useForm();
   const [listPicked, setListPicked] = useState<any>([]);
   const [renderMap, setRenderMap] = useState(false);
+
+  useEffect(() => {
+    if (id) {
+      getDetailBusStop(id).then((res) => {
+        setListPicked([{ lat: res.lat, lng: res.lon }]);
+        form.setFieldValue(['busStop', 0, 'name'], res.name);
+      });
+    }
+  }, [id, open]);
+
   useEffect(() => {
     if (open) {
       setTimeout(() => {
         setRenderMap(true);
-      }, 500);
+      }, 1000);
+    } else {
+      setRenderMap(false);
     }
   }, [open]);
 
@@ -29,23 +52,46 @@ const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
     setListPicked([]);
     onClose();
   };
-
   const handleChangeLocation = (location: { lat: number; lng: number }) => {
-    form.setFieldValue('lat', location.lat);
-    form.setFieldValue('lng', location.lng);
-    setListPicked([...listPicked, location]);
+    !id && setListPicked([...listPicked, location]);
+    if (id) {
+      setListPicked([location]);
+      form.setFieldValue(
+        ['busStop', 0, 'location'],
+        `Toạ độ: (${location.lat}, ${location.lng})`
+      );
+    }
   };
 
   const handleSave = async () => {
     form
       .validateFields()
-      .then((values) => {
+      .then(async (values) => {
         const saveData = values.busStop.map((item: any) => ({
           name: item.name,
-          latitude: item.location.split(',')[0],
-          longitude: item.location.split(',')[1],
+          lat: parseFloat(item.location.split(',')[0].slice(9)),
+          lon: parseFloat(item.location.split(',')[1].slice(0, -1)),
         }));
-        createBusStop(saveData);
+        console.log(saveData);
+        if (id) {
+          const res = await updateBusStop({
+            ...saveData[0],
+            id,
+          });
+          console.log(res);
+          if (res.status === 204) {
+            message.success('Cập nhật điểm bus thành công');
+            handleClose();
+            setUpdateTableData((prev: boolean) => !prev);
+          }
+        } else {
+          const res = await createBusStop(saveData);
+          if (res.status === 200) {
+            message.success('Thêm điểm bus thành công');
+            handleClose();
+            setUpdateTableData((prev: boolean) => !prev);
+          }
+        }
       })
       .catch((error) => {
         console.log(error);

@@ -1,3 +1,4 @@
+import { omit } from 'lodash';
 import axiosIns from '../utils/axios';
 
 export const getAllAccount = async () => {
@@ -28,7 +29,7 @@ export const createAccount = async (data: IAccount) => {
 };
 
 export const updateAccount = async (data: IUpdateAccount) => {
-  const res = await axiosIns.put(`/api/Account`, data);
+  const res = await axiosIns.put(`/api/Account/${data.id}`, data);
   return res;
 };
 
