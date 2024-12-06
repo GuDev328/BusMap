@@ -14,7 +14,8 @@ import { Card, PageHeader } from '../../components';
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { COLOR } from '../../App';
 import DrawerCRU from './Handle/DrawerCRU';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getAllBusStop } from '../../services/busStopServices';
 
 const data = [
   {
@@ -44,6 +45,15 @@ export const BusStopManagement = () => {
   const [open, setOpen] = useState(false);
   const [id, setId] = useState<string | undefined>(undefined);
   const [isViewMode, setIsViewMode] = useState(false);
+
+  const fetchData = async () => {
+    const res = await getAllBusStop();
+    console.log(res);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const columns = [
     {

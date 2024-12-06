@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 
 import MapPicBusStop from '../../../components/Map/MapPicBusStop';
 import { DeleteOutlined } from '@ant-design/icons';
+import { createBusStop } from '../../../services/busStopServices';
 
 interface DrawerCRUProps {
   id?: string;
@@ -35,11 +36,16 @@ const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
     setListPicked([...listPicked, location]);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     form
       .validateFields()
       .then((values) => {
-        console.log(values);
+        const saveData = values.busStop.map((item: any) => ({
+          name: item.name,
+          latitude: item.location.split(',')[0],
+          longitude: item.location.split(',')[1],
+        }));
+        createBusStop(saveData);
       })
       .catch((error) => {
         console.log(error);
