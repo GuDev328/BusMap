@@ -11,11 +11,16 @@ import {
 } from 'antd';
 
 import { Card, PageHeader } from '../../components';
-import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
+import {
+  DeleteOutlined,
+  EditOutlined,
+  EyeOutlined,
+  PlusOutlined,
+} from '@ant-design/icons';
 import { COLOR } from '../../App';
 import DrawerCRU from './Handle/DrawerCRU';
 import { useEffect, useState } from 'react';
-import { getAllBusStop } from '../../services/busStopServices';
+import { deleteBusStop, getAllBusStop } from '../../services/busStopServices';
 
 export const BusStopManagement = () => {
   const [data, setData] = useState([]);
@@ -76,6 +81,14 @@ export const BusStopManagement = () => {
           size="middle"
           style={{ display: 'flex', justifyContent: 'center' }}
         >
+          <EyeOutlined
+            style={{ color: '#165dff' }}
+            onClick={() => {
+              setOpen(true);
+              setId(record.id);
+              setIsViewMode(true);
+            }}
+          />
           <EditOutlined
             style={{ color: '#165dff' }}
             onClick={() => {
@@ -93,11 +106,14 @@ export const BusStopManagement = () => {
     },
   ];
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     Modal.confirm({
       title: 'Bạn có chắc chắn muốn xóa điểm bus này không?',
-      onOk: () => {
-        console.log('ok');
+      onOk: async () => {
+        const res = await deleteBusStop(id);
+        if (res.status === 204) {
+          setUpdateTableData(!updateTableData);
+        }
       },
     });
   };
@@ -108,8 +124,8 @@ export const BusStopManagement = () => {
         <Button
           style={{ width: '150px' }}
           onClick={() => {
-            setOpen(true);
             setId(undefined);
+            setOpen(true);
             setIsViewMode(false);
           }}
           icon={<PlusOutlined />}

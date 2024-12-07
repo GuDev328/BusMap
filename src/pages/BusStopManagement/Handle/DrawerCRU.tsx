@@ -41,11 +41,11 @@ const DrawerCRU = ({
     if (open) {
       setTimeout(() => {
         setRenderMap(true);
-      }, 1000);
+      }, 500);
     } else {
       setRenderMap(false);
     }
-  }, [open]);
+  }, [open, id, isViewMode]);
 
   const handleClose = () => {
     form.resetFields();
@@ -116,7 +116,7 @@ const DrawerCRU = ({
       open={open}
       onClose={handleClose}
     >
-      <Form form={form}>
+      <Form disabled={isViewMode} form={form}>
         {listPicked?.map((location: any, index: number) => (
           <Row key={index} gutter={[16, 16]}>
             <Col span={12}>
@@ -139,11 +139,13 @@ const DrawerCRU = ({
               </Form.Item>
             </Col>
             <Col span={2}>
-              <Button
-                style={{ border: 'none' }}
-                icon={<DeleteOutlined style={{ color: 'red' }} />}
-                onClick={() => handleRemoveLocation(index)}
-              ></Button>
+              {!id && (
+                <Button
+                  style={{ border: 'none' }}
+                  icon={<DeleteOutlined style={{ color: 'red' }} />}
+                  onClick={() => handleRemoveLocation(index)}
+                ></Button>
+              )}
             </Col>
           </Row>
         ))}
@@ -155,7 +157,7 @@ const DrawerCRU = ({
           justifyContent: 'flex-end',
         }}
       >
-        {listPicked?.length > 0 && (
+        {listPicked?.length > 0 && !isViewMode && (
           <Button onClick={handleSave} type="primary">
             Lưu
           </Button>

@@ -13,6 +13,7 @@ import React, { useEffect, useState } from 'react';
 import MapRoute from '../../../components/Map/MapRoute';
 import { Form, Input } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { getAllBusStop } from '../../../services/busStopServices';
 interface DrawerCRUProps {
   id?: string;
   isViewMode?: boolean;
@@ -24,39 +25,39 @@ const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
   const [renderMap, setRenderMap] = useState(false);
   const [numberBusStop, setNumberBusStop] = useState([
     {
-      id: 1,
+      id: 0,
       name: '',
     },
   ]);
   const [numberBusStopReturn, setNumberBusStopReturn] = useState([
     {
-      id: 1,
+      id: 0,
       name: '',
     },
   ]);
   const [form] = Form.useForm();
+  const [busStopDataOptions, setBusStopDataOptions] = useState<any>([]);
+  const [busStopData, setBusStopData] = useState<any>([]);
+  const [busStopSelected, setBusStopSelected] = useState<any>([]);
+  const [routerGo, setRouterGo] = useState<any>([]);
+  const [routerReturn, setRouterReturn] = useState<any>([]);
+
+  const fetchBusStopData = async () => {
+    const res = await getAllBusStop();
+    setBusStopData(res);
+    setBusStopDataOptions(
+      res.map((item: any) => ({ value: item.id, label: item.name }))
+    );
+  };
+
   useEffect(() => {
+    fetchBusStopData();
     if (open) {
       setTimeout(() => {
         setRenderMap(true);
       }, 500);
     }
   }, [open]);
-
-  const mockBusStop = [
-    {
-      value: 1,
-      label: 'Điểm dừng 1',
-    },
-    {
-      value: 2,
-      label: 'Điểm dừng 2',
-    },
-    {
-      value: 3,
-      label: 'Điểm dừng 3',
-    },
-  ];
 
   const handleSubmit = async () => {
     const value = await form.validateFields();
@@ -65,8 +66,83 @@ const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
 
   const handleCancel = () => {
     form.resetFields();
+    setRenderMap(false);
+    setRouterGo([]);
+    setRouterReturn([]);
+    setBusStopSelected([]);
+    setNumberBusStop([
+      {
+        id: 0,
+        name: '',
+      },
+    ]);
+    setNumberBusStopReturn([
+      {
+        id: 0,
+        name: '',
+      },
+    ]);
     onClose();
   };
+
+  console.log(numberBusStop);
+  const handleChangeBusStop = (value: any) => {
+    setMapData();
+  };
+
+  const setMapData = () => {
+    const busStop = form.getFieldValue('busStop') || [];
+    const busStopReturn = form.getFieldValue('busStopReturn') || [];
+    const busStops = [...busStop, ...busStopReturn];
+
+    const dataRouteGoSelected: any[] = [];
+    busStop.forEach((id: any) => {
+      const bus = busStopData.find((item: any) => item.id === id);
+      dataRouteGoSelected.push([bus.lon, bus.lat]);
+    });
+    setRouterGo(dataRouteGoSelected);
+
+    const dataRouteReturnSelected: any[] = [];
+    busStopReturn.forEach((id: any) => {
+      const bus = busStopData.find((item: any) => item.id === id);
+      dataRouteReturnSelected.push([bus.lon, bus.lat]);
+    });
+    setRouterReturn(dataRouteReturnSelected);
+
+    const dataBusStopSelected: any[] = [];
+    busStops.forEach((id) => {
+      const bus = busStopData.find((item: any) => item.id === id);
+      dataBusStopSelected.push(bus);
+    });
+    setBusStopSelected(dataBusStopSelected);
+  };
+
+  const handleDeleteBusStop = (index: number) => {
+    const newNumberBusStop = numberBusStop.filter((_, i) => i !== index);
+    setNumberBusStop(newNumberBusStop);
+
+    const currentBusStops = form.getFieldValue('busStop') || [];
+    const newBusStops = currentBusStops.filter(
+      (_: any, i: number) => i !== index
+    );
+    form.setFieldValue('busStop', newBusStops);
+    setMapData();
+  };
+
+  const handleDeleteBusStopReturn = (index: number) => {
+    const newNumberBusStopReturn = numberBusStopReturn.filter(
+      (_, i) => i !== index
+    );
+    setNumberBusStopReturn(newNumberBusStopReturn);
+
+    const currentBusStops = form.getFieldValue('busStopReturn') || [];
+    const newBusStops = currentBusStops.filter(
+      (_: any, i: number) => i !== index
+    );
+    form.setFieldValue('busStopReturn', newBusStops);
+    setMapData();
+  };
+
   return (
     <Drawer
       width={'100%'}
@@ -97,15 +173,7 @@ const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
             >
               <Input />
             </Form.Item>
-            <Form.Item
-              label="Đơn vị vận hành"
-              name="unit"
-              rules={[
-                { required: true, message: 'Vui lòng nhập đơn vị vận hành' },
-              ]}
-            >
-              <Input />
-            </Form.Item>
+
             <Flex justify="space-between">
               <Form.Item
                 label="Giá vé"
@@ -116,7 +184,7 @@ const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
               </Form.Item>
               <Form.Item
                 label="Độ dài tuyến"
-                name="kilometer"
+                name="route_length"
                 rules={[
                   { required: true, message: 'Vui lòng nhập độ dài tuyến' },
                 ]}
@@ -145,14 +213,13 @@ const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
                       ]}
                       label={`Điểm dừng`}
                     >
-                      <Select options={mockBusStop} />
+                      <Select
+                        onChange={(value) => handleChangeBusStop(value)}
+                        options={busStopDataOptions}
+                      />
                     </Form.Item>
                     <Button
-                      onClick={() =>
-                        setNumberBusStop(
-                          numberBusStop.filter((item) => item.id !== index + 1)
-                        )
-                      }
+                      onClick={() => handleDeleteBusStop(index)}
                       style={{ border: 'none' }}
                       icon={<DeleteOutlined style={{ color: '#ff4d4f' }} />}
                     ></Button>
@@ -162,7 +229,7 @@ const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
                   onClick={() =>
                     setNumberBusStop([
                       ...numberBusStop,
-                      { id: numberBusStop.length + 1, name: '' },
+                      { id: numberBusStop.length, name: '' },
                     ])
                   }
                   icon={<PlusOutlined />}
@@ -179,16 +246,13 @@ const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
                       ]}
                       label={`Điểm dừng`}
                     >
-                      <Select options={mockBusStop} />
+                      <Select
+                        onChange={handleChangeBusStop}
+                        options={busStopDataOptions}
+                      />
                     </Form.Item>
                     <Button
-                      onClick={() =>
-                        setNumberBusStopReturn(
-                          numberBusStopReturn.filter(
-                            (item) => item.id !== index + 1
-                          )
-                        )
-                      }
+                      onClick={() => handleDeleteBusStopReturn(index)}
                       style={{ border: 'none' }}
                       icon={<DeleteOutlined style={{ color: '#ff4d4f' }} />}
                     ></Button>
@@ -218,9 +282,12 @@ const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
         <Col span={17}>
           {renderMap && (
             <MapRoute
+              form={form}
+              routerGo={routerGo}
               width={'100%'}
               height={'calc(100vh - 90px)'}
-              onChangeLocation={() => {}}
+              routerReturn={routerReturn}
+              busStopData={busStopSelected}
             />
           )}
         </Col>
