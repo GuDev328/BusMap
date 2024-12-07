@@ -14,37 +14,31 @@ import { Card, PageHeader } from '../../components';
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { COLOR } from '../../App';
 import DrawerCRU from './Handle/DrawerCRU';
-import { useState } from 'react';
-
-const data = [
-  {
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-    tags: ['nice', 'developer'],
-  },
-  {
-    key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-    tags: ['loser'],
-  },
-  {
-    key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sydney No. 1 Lake Park',
-    tags: ['cool', 'teacher'],
-  },
-];
+import { useEffect, useState } from 'react';
+import { getAllRouters } from '../../services/routersServices';
 
 export const BusRouteManagement = () => {
+  const [data, setData] = useState<any>([]);
   const [open, setOpen] = useState(false);
   const [id, setId] = useState<string | undefined>(undefined);
   const [isViewMode, setIsViewMode] = useState(false);
+  const [updateTableData, setUpdateTableData] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
+  const paginatedData = data.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
+  const fetchData = async () => {
+    const res = await getAllRouters();
+    setData(res);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [updateTableData]);
   const columns = [
     {
       title: 'STT',
@@ -63,24 +57,24 @@ export const BusRouteManagement = () => {
       key: 'name',
     },
     {
-      title: 'Đơn vị',
-      key: 'unit',
-      dataIndex: 'unit',
-    },
-    {
       title: 'Giá vé',
-      key: 'ticketPrice',
-      dataIndex: 'ticketPrice',
+      key: 'price',
+      dataIndex: 'price',
     },
     {
       title: 'Độ dài tuyến',
-      key: 'length',
-      dataIndex: 'length',
+      key: 'route_length',
+      dataIndex: 'route_length',
     },
     {
       title: 'Thời gian chạy',
       key: 'time',
       dataIndex: 'time',
+      render: (text: any, record: any) => (
+        <a>
+          {record.start_time} - {record.end_time}
+        </a>
+      ),
     },
     {
       title: 'Hành động',
@@ -136,7 +130,19 @@ export const BusRouteManagement = () => {
           bordered
           style={{ borderRadius: '15px' }}
           columns={columns}
-          dataSource={data}
+          pagination={{
+            current: currentPage,
+            pageSize: pageSize,
+            total: data.length,
+            showTotal: (total) => `Tổng: ${total} điểm dừng`,
+            showSizeChanger: true,
+            locale: { items_per_page: '/trang' },
+            onChange: (page, size) => {
+              setCurrentPage(page);
+              setPageSize(size);
+            },
+          }}
+          dataSource={paginatedData}
         />
       </Flex>
 

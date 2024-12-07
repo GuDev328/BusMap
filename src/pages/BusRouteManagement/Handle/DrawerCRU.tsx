@@ -14,6 +14,9 @@ import MapRoute from '../../../components/Map/MapRoute';
 import { Form, Input } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { getAllBusStop } from '../../../services/busStopServices';
+import dayjs from 'dayjs';
+import { createRouter, IRouter } from '../../../services/routersServices';
+import { updateRouter } from '../../../services/routersServices';
 interface DrawerCRUProps {
   id?: string;
   isViewMode?: boolean;
@@ -61,7 +64,22 @@ const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
 
   const handleSubmit = async () => {
     const value = await form.validateFields();
-    console.log(value);
+    const data = {
+      name: value.name,
+      start_time: value.time[0].format('HH:mm'),
+      end_time: value.time[1].format('HH:mm'),
+      interval: value.interval,
+      price: value.price,
+      outbound_stops: value.busStop,
+      inbound_stops: value.busStopReturn,
+      route_length: value.route_length,
+    };
+    if (id) {
+      //await updateRouter(data);
+    } else {
+      const res = await createRouter(data as IRouter);
+      console.log(res);
+    }
   };
 
   const handleCancel = () => {
@@ -85,7 +103,6 @@ const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
     onClose();
   };
 
-  console.log(numberBusStop);
   const handleChangeBusStop = (value: any) => {
     setMapData();
   };
@@ -192,6 +209,13 @@ const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
                 <InputNumber />
               </Form.Item>
             </Flex>
+            <Form.Item
+              label="Vòng chạy"
+              name="interval"
+              rules={[{ required: true, message: 'Vui lòng nhập vòng chạy' }]}
+            >
+              <InputNumber style={{ width: '100%' }} />
+            </Form.Item>
             <Form.Item
               label="Thời gian chạy "
               name="time"
