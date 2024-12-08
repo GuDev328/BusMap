@@ -6,20 +6,71 @@ import {
   Drawer,
   Form,
   Input,
+  message,
   Row,
   Select,
 } from 'antd';
-import React from 'react';
+import React, { useEffect } from 'react';
+import {
+  createNotification,
+  INotification,
+  IUpdateNotification,
+  updateNotification,
+} from '../../../services/notificationServices';
+import { getDetailNotification } from '../../../services/notificationServices';
+import dayjs from 'dayjs';
 
 interface DrawerCRUProps {
   id?: string;
   isViewMode?: boolean;
   open: boolean;
   onClose: () => void;
+  setUpdateTableData: any;
 }
 
-const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
+const DrawerCRU = ({
+  open,
+  onClose,
+  id,
+  isViewMode,
+  setUpdateTableData,
+}: DrawerCRUProps) => {
   const [form] = Form.useForm();
+  useEffect(() => {
+    if (id) {
+      getDetailNotification(id).then((res: INotification) => {
+        form.setFieldsValue({
+          ...res,
+          expire_at: dayjs(res.expire_at),
+        });
+      });
+    }
+  }, [id, isViewMode]);
+
+  const handleClose = () => {
+    form.resetFields();
+    onClose();
+  };
+
+  const handleSubmit = async () => {
+    const dataForm = await form.validateFields();
+    if (!id) {
+      const create = await createNotification(dataForm as INotification);
+      if (create.status === 200) {
+        message.success('Tạo thông báo thành công');
+        handleClose();
+      }
+    } else {
+      const update = await updateNotification({
+        id,
+        ...dataForm,
+      } as IUpdateNotification);
+      if (update.status === 200) {
+        message.success('Cập nhật thông báo thành công');
+        handleClose();
+      }
+    }
+  };
   return (
     <Drawer
       width={'70%'}
@@ -33,7 +84,7 @@ const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
       open={open}
       onClose={onClose}
     >
-      <Form form={form} layout="vertical">
+      <Form form={form} layout="vertical" disabled={isViewMode}>
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item
@@ -49,18 +100,16 @@ const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
           <Col span={12}>
             <Form.Item
               label="Ngày hết hạn"
-              name="expiredAt"
+              name="expire_at"
               rules={[
                 { required: true, message: 'Ngày hết hạn không được để trống' },
               ]}
             >
-              <div style={{ width: '100%' }}>
-                <DatePicker
-                  placeholder="Chọn ngày hết hạn"
-                  format="DD/MM/YYYY"
-                  style={{ width: '100%' }}
-                />
-              </div>
+              <DatePicker
+                placeholder="Chọn ngày hết hạn"
+                format="DD/MM/YYYY"
+                style={{ width: '100%' }}
+              />
             </Form.Item>
           </Col>
         </Row>
@@ -73,7 +122,11 @@ const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
         </Form.Item>
       </Form>
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <Button type="primary">Tạo thông báo</Button>
+        {!isViewMode && (
+          <Button type="primary" onClick={handleSubmit}>
+            {id ? 'Cập nhật' : 'Tạo thông báo'}
+          </Button>
+        )}
       </div>
     </Drawer>
   );

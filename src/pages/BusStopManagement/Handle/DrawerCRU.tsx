@@ -166,6 +166,7 @@ const DrawerCRU = ({
       {listPicked?.length === 0 && <h3>Vui lòng chọn điểm bus</h3>}
       {renderMap && (
         <MapPicBusStop
+          pickable={!isViewMode}
           listPicked={listPicked}
           onChangeLocation={handleChangeLocation}
           width="100%"

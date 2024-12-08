@@ -1,31 +1,46 @@
-import { Button, Flex, Modal, Space, Table, Typography } from 'antd';
-import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import { useState } from 'react';
+import { Button, Flex, message, Modal, Space, Table, Typography } from 'antd';
+import {
+  EditOutlined,
+  DeleteOutlined,
+  PlusOutlined,
+  EyeOutlined,
+} from '@ant-design/icons';
+import { useEffect, useState } from 'react';
 import DrawerCRU from './Handle/DrawerCRU';
-const allData = Array.from({ length: 35 }, (_, index) => ({
-  key: `${index + 1}`,
-  title: `Tiêu đề thông báo ${index + 1}`,
-  description: `Nội dung thông báo chi tiết ${index + 1}`,
-  expiredAt: `2024-12-${(index % 35) + 1}`.padStart(2, '0'),
-}));
+import {
+  deleteNotification,
+  getAllNotification,
+} from '../../services/notificationServices';
+import dayjs from 'dayjs';
+
 export const NotificationManagementPage = () => {
+  const [data, setData] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
   const [id, setId] = useState<string | undefined>(undefined);
   const [isViewMode, setIsViewMode] = useState(false);
+  const [updateTableData, setUpdateTableData] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  const paginatedData = allData.slice(
+  const paginatedData = data.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
+  const fetchData = async () => {
+    const res = await getAllNotification();
+    setData(res);
+  };
 
+  useEffect(() => {
+    fetchData();
+  }, [updateTableData]);
   const columns = [
     {
       title: 'STT',
       dataIndex: 'stt',
       key: 'stt',
+      width: 70,
       render: (text: any, record: any, index: number) =>
         (currentPage - 1) * pageSize + index + 1, // Đánh số thứ tự theo trang
     },
@@ -38,11 +53,16 @@ export const NotificationManagementPage = () => {
       title: 'Nội dung',
       dataIndex: 'description',
       key: 'description',
+      ellipsis: true,
     },
     {
       title: 'Ngày hết hạn',
-      dataIndex: 'expiredAt',
-      key: 'expiredAt',
+      dataIndex: 'expire_at',
+      key: 'expire_at',
+      width: 150,
+      render: (text: string) => {
+        return dayjs(text).format('DD/MM/YYYY');
+      },
     },
     {
       title: 'Hành động',
@@ -53,17 +73,25 @@ export const NotificationManagementPage = () => {
           size="middle"
           style={{ display: 'flex', justifyContent: 'center' }}
         >
+          <EyeOutlined
+            style={{ color: '#165dff' }}
+            onClick={() => {
+              setOpen(true);
+              setId(record.id);
+              setIsViewMode(true);
+            }}
+          />
           <EditOutlined
             style={{ color: '#165dff' }}
             onClick={() => {
               setOpen(true);
-              setId(record.key);
+              setId(record.id);
               setIsViewMode(false);
             }}
           />
           <DeleteOutlined
             style={{ color: '#ff4d4f' }}
-            onClick={() => handleDelete(record.key)}
+            onClick={() => handleDelete(record.id)}
           />
         </Space>
       ),
@@ -74,7 +102,12 @@ export const NotificationManagementPage = () => {
     Modal.confirm({
       title: 'Bạn có chắc chắn muốn xóa thông báo này không?',
       onOk: () => {
-        console.log('ok');
+        deleteNotification(id).then((res) => {
+          if (res.status === 200) {
+            message.success('Xóa thông báo thành công');
+            setUpdateTableData((prev: boolean) => !prev);
+          }
+        });
       },
     });
   };
@@ -99,7 +132,7 @@ export const NotificationManagementPage = () => {
           pagination={{
             current: currentPage,
             pageSize: pageSize,
-            total: allData.length,
+            total: data.length,
             showSizeChanger: true,
             locale: { items_per_page: '/trang' },
             onChange: (page, size) => {
@@ -114,7 +147,13 @@ export const NotificationManagementPage = () => {
         />
       </Flex>
 
-      <DrawerCRU open={open} onClose={() => setOpen(false)} />
+      <DrawerCRU
+        setUpdateTableData={setUpdateTableData}
+        open={open}
+        onClose={() => setOpen(false)}
+        id={id}
+        isViewMode={isViewMode}
+      />
     </div>
   );
 };
