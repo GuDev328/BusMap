@@ -16,6 +16,7 @@ import { useMediaQuery } from 'react-responsive';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { ROOTS_ACCOUNT_MANAGEMENT } from '../../constants/routes';
+import { login } from '../../services/authServices';
 
 const { Title, Text } = Typography;
 
@@ -33,18 +34,12 @@ export const SignInPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  const onFinish = (values: any) => {
-    console.log('Success:', values);
-    setLoading(true);
-
-    message.open({
-      type: 'success',
-      content: 'Login successful',
-    });
-
-    setTimeout(() => {
+  const onFinish = async (values: any) => {
+    const res = await login(values);
+    if (res.status === 200) {
+      localStorage.setItem('token', res.data.token);
       navigate(ROOTS_ACCOUNT_MANAGEMENT);
-    }, 1000);
+    }
   };
 
   const onFinishFailed = (errorInfo: any) => {
@@ -81,10 +76,6 @@ export const SignInPage = () => {
             layout="vertical"
             labelCol={{ span: 24 }}
             wrapperCol={{ span: 24 }}
-            initialValues={{
-              email: 'demo@email.com',
-              password: 'demo123',
-            }}
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
             autoComplete="off"
@@ -93,11 +84,9 @@ export const SignInPage = () => {
             <Row gutter={[8, 0]}>
               <Col xs={24}>
                 <Form.Item<FieldType>
-                  label="Tên đăng nhập"
+                  label="Email"
                   name="email"
-                  rules={[
-                    { required: true, message: 'Hãy nhập tên đăng nhập' },
-                  ]}
+                  rules={[{ required: true, message: 'Hãy nhập email' }]}
                 >
                   <Input />
                 </Form.Item>
