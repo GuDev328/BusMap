@@ -58,6 +58,7 @@ const DrawerCRU = ({
       const create = await createNotification(dataForm as INotification);
       if (create.status === 200) {
         message.success('Tạo thông báo thành công');
+        setUpdateTableData((prev: any) => !prev);
         handleClose();
       }
     } else {
@@ -67,6 +68,7 @@ const DrawerCRU = ({
       } as IUpdateNotification);
       if (update.status === 200) {
         message.success('Cập nhật thông báo thành công');
+        setUpdateTableData((prev: any) => !prev);
         handleClose();
       }
     }

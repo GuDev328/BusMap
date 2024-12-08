@@ -17,9 +17,11 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import {
   AppstoreAddOutlined,
+  BellOutlined,
   GithubOutlined,
   LoginOutlined,
   MenuFoldOutlined,
+  MenuOutlined,
   MenuUnfoldOutlined,
   ProductOutlined,
 } from '@ant-design/icons';
@@ -28,6 +30,7 @@ import { Logo, NProgress } from '../../components';
 import { PATH_AUTH, PATH_LANDING } from '../../constants';
 import { useNavigate } from 'react-router-dom';
 import { ROOTS_ACCOUNT_MANAGEMENT } from '../../constants/routes';
+import ListNotification from '../../components/Notification/ListNotification';
 const { Header, Content, Footer } = Layout;
 
 export const GuestLayout = () => {
@@ -64,6 +67,14 @@ export const GuestLayout = () => {
     username ? navigate(ROOTS_ACCOUNT_MANAGEMENT) : navigate(PATH_AUTH.signin);
   };
 
+  const [openPopover, setOpenPopover] = useState(false);
+  const hidePopover = () => {
+    setOpenPopover(false);
+  };
+  const handleOpenChangePopover = (newOpen: boolean) => {
+    setOpenPopover(newOpen);
+  };
+
   return (
     <>
       <NProgress isAnimating={isLoading} key={location.key} />
@@ -88,15 +99,34 @@ export const GuestLayout = () => {
           }}
         >
           <Logo color="white" asLink href={PATH_LANDING.root} />
+          <div>
+            <Popover
+              content={<ListNotification />}
+              title="Thông báo"
+              trigger="click"
+              open={openPopover}
+              onOpenChange={handleOpenChangePopover}
+            >
+              <Button
+                type="text"
+                style={{
+                  borderColor: 'white',
+                  color: 'white',
+                  marginRight: 12,
+                }}
+                icon={<BellOutlined />}
+              ></Button>
+            </Popover>
 
-          <Button
-            type="text"
-            onClick={handleBTNLogin}
-            style={{ color: 'white', borderColor: 'white' }}
-            icon={<LoginOutlined />}
-          >
-            {username ? 'Xin chào, ' + username : 'Đăng nhập'}
-          </Button>
+            <Button
+              type="text"
+              onClick={handleBTNLogin}
+              style={{ color: 'white', borderColor: 'white' }}
+              icon={<LoginOutlined />}
+            >
+              {username ? 'Xin chào, ' + username : 'Đăng nhập'}
+            </Button>
+          </div>
         </Header>
         <Content
           style={{
