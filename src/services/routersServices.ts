@@ -50,3 +50,8 @@ export const deleteRouter = async (id: string) => {
   const res = await axiosIns.delete(`/api/Routes/${id}`);
   return res;
 };
+
+export const searchRouter = async (name: string) => {
+  const res = await axiosIns.get(`/api/Routes/findroute?name=${name}`);
+  return res.data;
+};

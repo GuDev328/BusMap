@@ -22,7 +22,11 @@ axiosIns.interceptors.response.use(
     return response;
   },
   (error) => {
-    message.error(error.response.data);
+    if (typeof error.response.data === 'object') {
+      message.error(error.response.data.errors.name[0]);
+    } else {
+      message.error(error.response.data);
+    }
     if (
       error.response.status === 401 &&
       window.location.pathname !== '/auth/signin'

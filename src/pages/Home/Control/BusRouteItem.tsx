@@ -2,8 +2,9 @@ import React from 'react';
 import { COLOR } from '../../../App';
 import { DollarOutlined, FieldTimeOutlined } from '@ant-design/icons';
 import { Image } from 'antd';
+import { formatCurrency } from '../../../utils';
 
-const BusRouteItem = () => {
+const BusRouteItem = ({ data }: { data: any }) => {
   return (
     <div
       style={{
@@ -22,16 +23,16 @@ const BusRouteItem = () => {
       </div>
       <div style={{ flex: 1 }}>
         <div style={{ fontWeight: 'bold', color: COLOR[500] }}>
-          Tuyến số Metro 2A
+          {data.index_route}
         </div>
-        <div>Cát Linh - Hà Đông</div>
+        <div>{data.name}</div>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <div>
-            <FieldTimeOutlined /> 05:00 - 23:00
+            <FieldTimeOutlined /> {data.start_time} - {data.end_time}
           </div>
           <div>
             {' '}
-            <DollarOutlined /> 24,000 VNĐ
+            <DollarOutlined /> {formatCurrency(data.price)}
           </div>
         </div>
       </div>

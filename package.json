@@ -23,7 +23,7 @@
     "@changesets/cli": "^2.26.2",
     "@reduxjs/toolkit": "^2.2.3",
     "@tanem/react-nprogress": "^5.0.51",
-    "antd": "^5.10.1",
+    "antd": "^5.22.3",
     "axios": "^1.7.9",
     "dayjs": "^1.11.9",
     "firebase": "^10.8.0",
