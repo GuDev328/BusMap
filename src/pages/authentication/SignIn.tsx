@@ -15,7 +15,10 @@ import { Logo } from '../../components';
 import { useMediaQuery } from 'react-responsive';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { ROOTS_ACCOUNT_MANAGEMENT } from '../../constants/routes';
+import {
+  ROOTS_ACCOUNT_MANAGEMENT,
+  ROOTS_BUS_ROUTE_MANAGEMENT,
+} from '../../constants/routes';
 import { login } from '../../services/authServices';
 
 const { Title, Text } = Typography;
@@ -33,12 +36,20 @@ export const SignInPage = () => {
   const isMobile = useMediaQuery({ maxWidth: 769 });
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const token = localStorage.getItem('token');
+
+  if (token) {
+    navigate(ROOTS_BUS_ROUTE_MANAGEMENT);
+  }
 
   const onFinish = async (values: any) => {
     const res = await login(values);
+    console.log(res);
     if (res.status === 200) {
       localStorage.setItem('token', res.data.token);
-      navigate(ROOTS_ACCOUNT_MANAGEMENT);
+      localStorage.setItem('username', res.data.username);
+      localStorage.setItem('role', res.data.role);
+      navigate(ROOTS_BUS_ROUTE_MANAGEMENT);
     }
   };
 

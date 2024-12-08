@@ -24,6 +24,7 @@ import {
   UserOutlined,
   MoonOutlined,
   SunOutlined,
+  DownCircleOutlined,
 } from '@ant-design/icons';
 import {
   CSSTransition,
@@ -39,6 +40,7 @@ import { PATH_LANDING } from '../../constants';
 import { useSelector, useDispatch } from 'react-redux';
 import { toggleTheme } from '../../redux/theme/themeSlice.ts';
 import { RootState } from '../../redux/store.ts';
+import { COLOR } from '../../App.tsx';
 const { Content } = Layout;
 
 type AppLayoutProps = {
@@ -53,20 +55,21 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
   const [collapsed, setCollapsed] = useState(true);
   const [navFill, setNavFill] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const username = localStorage.getItem('username');
   const location = useLocation();
   const navigate = useNavigate();
   const nodeRef = useRef(null);
   const floatBtnRef = useRef(null);
   const items: MenuProps['items'] = [
-    {
-      key: 'user-profile-link',
-      label: 'Thông tin cá nhân',
-      icon: <UserOutlined />,
-    },
+    // {
+    //   key: 'user-profile-link',
+    //   label: 'Thông tin cá nhân',
+    //   icon: <UserOutlined />,
+    // },
 
-    {
-      type: 'divider',
-    },
+    // {
+    //   type: 'divider',
+    // },
     {
       key: 'user-logout-link',
       label: 'Đăng xuất',
@@ -75,12 +78,13 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
       onClick: () => {
         message.open({
           type: 'loading',
-          content: 'signing you out',
+          content: 'Đang đăng xuất...',
+          duration: 0.2,
         });
-
+        localStorage.clear();
         setTimeout(() => {
           navigate(PATH_LANDING.root);
-        }, 1000);
+        }, 200);
       },
     },
   ];
@@ -167,15 +171,9 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
             </Flex>
             <Flex align="center" gap="small">
               <Dropdown menu={{ items }} trigger={['click']}>
-                <Flex>
-                  <img
-                    src="/me.jpg"
-                    alt="user profile photo"
-                    height={36}
-                    width={36}
-                    style={{ borderRadius, objectFit: 'cover' }}
-                  />
-                </Flex>
+                <div style={{ color: '#fff' }}>
+                  Xin chào, {username} <DownCircleOutlined />
+                </div>
               </Dropdown>
             </Flex>
           </HeaderNav>

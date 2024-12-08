@@ -37,28 +37,52 @@ const getItem = (
   } as MenuItem;
 };
 
-const items: MenuProps['items'] = [
-  getItem(
-    <Link to={ROOTS_ACCOUNT_MANAGEMENT}>Quản lý tài khoản</Link>,
-    'account-management',
-    <UserOutlined />
-  ),
-  getItem(
-    <Link to={ROOTS_BUS_ROUTE_MANAGEMENT}>Quản lý tuyến xe</Link>,
-    'bus-route-management',
-    <BoxPlotOutlined />
-  ),
-  getItem(
-    <Link to={ROOTS_BUS_STOP_MANAGEMENT}>Quản lý điểm dừng</Link>,
-    'bus-stop-management',
-    <GroupOutlined />
-  ),
-  getItem(
-    <Link to={ROOTS_NOTIFICATION_MANAGEMENT}>Quản lý thông báo</Link>,
-    'notification-management',
-    <BellOutlined />
-  ),
-];
+const getPermissionItems = () => {
+  const role = localStorage.getItem('role');
+
+  const items: MenuProps['items'] =
+    Number(role) === 1
+      ? [
+          getItem(
+            <Link to={ROOTS_BUS_ROUTE_MANAGEMENT}>Quản lý tuyến xe</Link>,
+            'bus-route-management',
+            <BoxPlotOutlined />
+          ),
+          getItem(
+            <Link to={ROOTS_BUS_STOP_MANAGEMENT}>Quản lý điểm dừng</Link>,
+            'bus-stop-management',
+            <GroupOutlined />
+          ),
+          getItem(
+            <Link to={ROOTS_NOTIFICATION_MANAGEMENT}>Quản lý thông báo</Link>,
+            'notification-management',
+            <BellOutlined />
+          ),
+        ]
+      : [
+          getItem(
+            <Link to={ROOTS_ACCOUNT_MANAGEMENT}>Quản lý tài khoản</Link>,
+            'account-management',
+            <UserOutlined />
+          ),
+          getItem(
+            <Link to={ROOTS_BUS_ROUTE_MANAGEMENT}>Quản lý tuyến xe</Link>,
+            'bus-route-management',
+            <BoxPlotOutlined />
+          ),
+          getItem(
+            <Link to={ROOTS_BUS_STOP_MANAGEMENT}>Quản lý điểm dừng</Link>,
+            'bus-stop-management',
+            <GroupOutlined />
+          ),
+          getItem(
+            <Link to={ROOTS_NOTIFICATION_MANAGEMENT}>Quản lý thông báo</Link>,
+            'notification-management',
+            <BellOutlined />
+          ),
+        ];
+  return items;
+};
 
 const rootSubmenuKeys = ['account-management'];
 
@@ -114,7 +138,7 @@ const SideNav = ({ ...others }: SideNavProps) => {
       >
         <Menu
           mode="inline"
-          items={items}
+          items={getPermissionItems()}
           onClick={onClick}
           openKeys={openKeys}
           onOpenChange={onOpenChange}

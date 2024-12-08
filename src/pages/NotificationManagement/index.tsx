@@ -133,6 +133,7 @@ export const NotificationManagementPage = () => {
             current: currentPage,
             pageSize: pageSize,
             total: data.length,
+            showTotal: (total) => `Tổng: ${total} thông báo`,
             showSizeChanger: true,
             locale: { items_per_page: '/trang' },
             onChange: (page, size) => {

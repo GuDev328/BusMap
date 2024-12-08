@@ -155,7 +155,7 @@ export const BusRouteManagement = () => {
             current: currentPage,
             pageSize: pageSize,
             total: data.length,
-            showTotal: (total) => `Tổng: ${total} điểm dừng`,
+            showTotal: (total) => `Tổng: ${total} tuyến xe`,
             showSizeChanger: true,
             locale: { items_per_page: '/trang' },
             onChange: (page, size) => {

@@ -27,6 +27,7 @@ import { useMediaQuery } from 'react-responsive';
 import { Logo, NProgress } from '../../components';
 import { PATH_AUTH, PATH_LANDING } from '../../constants';
 import { useNavigate } from 'react-router-dom';
+import { ROOTS_ACCOUNT_MANAGEMENT } from '../../constants/routes';
 const { Header, Content, Footer } = Layout;
 
 export const GuestLayout = () => {
@@ -40,6 +41,7 @@ export const GuestLayout = () => {
   const [navFill, setNavFill] = useState(false);
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const username = localStorage.getItem('username');
   const showDrawer = () => {
     setOpen(true);
   };
@@ -57,6 +59,10 @@ export const GuestLayout = () => {
       }
     });
   }, []);
+
+  const handleBTNLogin = () => {
+    username ? navigate(ROOTS_ACCOUNT_MANAGEMENT) : navigate(PATH_AUTH.signin);
+  };
 
   return (
     <>
@@ -85,11 +91,11 @@ export const GuestLayout = () => {
 
           <Button
             type="text"
-            onClick={() => navigate(PATH_AUTH.signin)}
+            onClick={handleBTNLogin}
             style={{ color: 'white', borderColor: 'white' }}
             icon={<LoginOutlined />}
           >
-            Đăng nhập
+            {username ? 'Xin chào, ' + username : 'Đăng nhập'}
           </Button>
         </Header>
         <Content
