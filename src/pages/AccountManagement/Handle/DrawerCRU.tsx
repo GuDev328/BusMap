@@ -56,7 +56,7 @@ const DrawerCRU = ({
       const create = await createAccount(
         omit(dataForm, ['confirmPassword']) as IAccount
       );
-      if (create.status === 201) {
+      if (create.status === 200) {
         message.success('Tạo tài khoản thành công');
         handleClose();
         setUpdateTableData((prev: boolean) => !prev);
@@ -67,7 +67,7 @@ const DrawerCRU = ({
         password: passwordToEdit,
         ...dataForm,
       } as IUpdateAccount);
-      if (update.status === 204) {
+      if (update.status === 200) {
         message.success('Cập nhật tài khoản thành công');
         handleClose();
         setUpdateTableData((prev: boolean) => !prev);

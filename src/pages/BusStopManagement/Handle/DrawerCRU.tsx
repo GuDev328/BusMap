@@ -79,7 +79,7 @@ const DrawerCRU = ({
             id,
           });
           console.log(res);
-          if (res.status === 204) {
+          if (res.status === 200) {
             message.success('Cập nhật điểm bus thành công');
             handleClose();
             setUpdateTableData((prev: boolean) => !prev);

@@ -2,6 +2,7 @@ import {
   Button,
   Col,
   Flex,
+  message,
   Modal,
   Row,
   Space,
@@ -11,11 +12,17 @@ import {
 } from 'antd';
 
 import { Card, PageHeader } from '../../components';
-import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
+import {
+  DeleteOutlined,
+  EditOutlined,
+  EyeOutlined,
+  PlusOutlined,
+} from '@ant-design/icons';
 import { COLOR } from '../../App';
 import DrawerCRU from './Handle/DrawerCRU';
 import { useEffect, useState } from 'react';
-import { getAllRouters } from '../../services/routersServices';
+import { deleteRouter, getAllRouters } from '../../services/routersServices';
+import { formatCurrency } from '../../utils';
 
 export const BusRouteManagement = () => {
   const [data, setData] = useState<any>([]);
@@ -48,8 +55,8 @@ export const BusRouteManagement = () => {
     },
     {
       title: 'Tuyến số',
-      dataIndex: 'number',
-      key: 'number',
+      dataIndex: 'index_route',
+      key: 'index_route',
     },
     {
       title: 'Tên tuyến',
@@ -60,6 +67,7 @@ export const BusRouteManagement = () => {
       title: 'Giá vé',
       key: 'price',
       dataIndex: 'price',
+      render: (text: any, record: any) => <a>{formatCurrency(record.price)}</a>,
     },
     {
       title: 'Độ dài tuyến',
@@ -85,17 +93,25 @@ export const BusRouteManagement = () => {
           size="middle"
           style={{ display: 'flex', justifyContent: 'center' }}
         >
+          <EyeOutlined
+            style={{ color: '#165dff' }}
+            onClick={() => {
+              setOpen(true);
+              setId(record.id);
+              setIsViewMode(true);
+            }}
+          />
           <EditOutlined
             style={{ color: '#165dff' }}
             onClick={() => {
               setOpen(true);
-              setId(record.key);
+              setId(record.id);
               setIsViewMode(false);
             }}
           />
           <DeleteOutlined
             style={{ color: '#ff4d4f' }}
-            onClick={() => handleDelete(record.key)}
+            onClick={() => handleDelete(record.id)}
           />
         </Space>
       ),
@@ -106,7 +122,12 @@ export const BusRouteManagement = () => {
     Modal.confirm({
       title: 'Bạn có chắc chắn muốn xóa tuyến đường này không?',
       onOk: () => {
-        console.log('ok');
+        deleteRouter(id).then((res: any) => {
+          if (res.status === 200) {
+            message.success('Xóa tuyến đường thành công');
+            setUpdateTableData((pre: boolean) => !pre);
+          }
+        });
       },
     });
   };
@@ -147,6 +168,7 @@ export const BusRouteManagement = () => {
       </Flex>
 
       <DrawerCRU
+        setUpdateTableData={setUpdateTableData}
         open={open}
         onClose={() => setOpen(false)}
         id={id}

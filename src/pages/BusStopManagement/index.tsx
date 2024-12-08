@@ -2,6 +2,7 @@ import {
   Button,
   Col,
   Flex,
+  message,
   Modal,
   Row,
   Space,
@@ -111,7 +112,8 @@ export const BusStopManagement = () => {
       title: 'Bạn có chắc chắn muốn xóa điểm bus này không?',
       onOk: async () => {
         const res = await deleteBusStop(id);
-        if (res.status === 204) {
+        if (res.status === 200) {
+          message.success('Xóa điểm bus thành công');
           setUpdateTableData(!updateTableData);
         }
       },

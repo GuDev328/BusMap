@@ -4,6 +4,7 @@ import {
   Drawer,
   Flex,
   InputNumber,
+  message,
   Row,
   Select,
   Tabs,
@@ -15,16 +16,28 @@ import { Form, Input } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { getAllBusStop } from '../../../services/busStopServices';
 import dayjs from 'dayjs';
-import { createRouter, IRouter } from '../../../services/routersServices';
+import {
+  createRouter,
+  getDetailRouter,
+  IRouter,
+  IUpdateRouter,
+} from '../../../services/routersServices';
 import { updateRouter } from '../../../services/routersServices';
 interface DrawerCRUProps {
   id?: string;
   isViewMode?: boolean;
   open: boolean;
   onClose: () => void;
+  setUpdateTableData: any;
 }
 
-const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
+const DrawerCRU = ({
+  open,
+  onClose,
+  id,
+  isViewMode,
+  setUpdateTableData,
+}: DrawerCRUProps) => {
   const [renderMap, setRenderMap] = useState(false);
   const [numberBusStop, setNumberBusStop] = useState([
     {
@@ -53,19 +66,50 @@ const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
     );
   };
 
+  const fetchRouterData = async () => {
+    const res = await getDetailRouter(id as string);
+    console.log(res);
+    const formatData = {
+      ...res,
+      busStop: res.outbound_stops,
+      busStopReturn: res.inbound_stops,
+      time: [dayjs(res.start_time, 'HH:mm'), dayjs(res.end_time, 'HH:mm')],
+    };
+    setNumberBusStop(
+      formatData.busStop.map((item: any, index: number) => ({
+        id: index,
+        name: '',
+      }))
+    );
+    setNumberBusStopReturn(
+      formatData.busStopReturn.map((item: any, index: number) => ({
+        id: index,
+        name: '',
+      }))
+    );
+    form.setFieldsValue(formatData);
+    setMapData();
+  };
+
   useEffect(() => {
     fetchBusStopData();
+
     if (open) {
       setTimeout(() => {
         setRenderMap(true);
       }, 500);
     }
-  }, [open]);
+
+    if (id) {
+      fetchRouterData();
+    }
+  }, [open, id]);
 
   const handleSubmit = async () => {
     const value = await form.validateFields();
     const data = {
       name: value.name,
+      index_route: value.index_route,
       start_time: value.time[0].format('HH:mm'),
       end_time: value.time[1].format('HH:mm'),
       interval: value.interval,
@@ -75,10 +119,19 @@ const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
       route_length: value.route_length,
     };
     if (id) {
-      //await updateRouter(data);
+      const res = await updateRouter({ ...data, id } as IUpdateRouter);
+      if (res.status === 200) {
+        message.success('Chỉnh sửa tuyến đường thành công');
+        setUpdateTableData((pre: boolean) => !pre);
+        handleCancel();
+      }
     } else {
       const res = await createRouter(data as IRouter);
-      console.log(res);
+      if (res.status === 200) {
+        message.success('Thêm tuyến đường thành công');
+        setUpdateTableData((pre: boolean) => !pre);
+        handleCancel();
+      }
     }
   };
 
@@ -175,10 +228,10 @@ const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
     >
       <Row gutter={[16, 8]}>
         <Col span={7}>
-          <Form form={form}>
+          <Form form={form} disabled={isViewMode}>
             <Form.Item
               label="Tuyến số"
-              name="number"
+              name="index_route"
               rules={[{ required: true, message: 'Vui lòng nhập tuyến số' }]}
             >
               <Input />
@@ -223,7 +276,10 @@ const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
                 { required: true, message: 'Vui lòng nhập thời gian chạy ' },
               ]}
             >
-              <TimePicker.RangePicker placeholder={['Từ', 'Đến']} />
+              <TimePicker.RangePicker
+                format="HH:mm"
+                placeholder={['Từ', 'Đến']}
+              />
             </Form.Item>
             <Tabs>
               <Tabs.TabPane tab="Tuyến đi" key="1">
@@ -294,14 +350,16 @@ const DrawerCRU = ({ open, onClose, id, isViewMode }: DrawerCRUProps) => {
               </Tabs.TabPane>
             </Tabs>
           </Form>
-          <Button
-            disabled={!numberBusStop.length}
-            style={{ width: '100%', marginTop: 10 }}
-            type="primary"
-            onClick={handleSubmit}
-          >
-            Xác nhận
-          </Button>
+          {!isViewMode && (
+            <Button
+              disabled={!numberBusStop.length}
+              style={{ width: '100%', marginTop: 10 }}
+              type="primary"
+              onClick={handleSubmit}
+            >
+              Xác nhận
+            </Button>
+          )}
         </Col>
         <Col span={17}>
           {renderMap && (

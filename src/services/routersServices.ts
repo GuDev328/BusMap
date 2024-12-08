@@ -8,6 +8,7 @@ export const getAllRouters = async () => {
 
 export interface IRouter {
   name: string;
+  index_route: string;
   start_time: string;
   end_time: string;
   interval: number;
@@ -20,6 +21,7 @@ export interface IRouter {
 export interface IUpdateRouter {
   id: string;
   name: string;
+  index_route: string;
   start_time: string;
   end_time: string;
   interval: number;

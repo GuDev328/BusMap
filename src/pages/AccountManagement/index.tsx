@@ -113,10 +113,10 @@ export const AccountManagementPage = () => {
       title: 'Bạn có chắc chắn muốn xóa tài khoản này không?',
       onOk: () => {
         deleteAccount(id).then((res: any) => {
-          // if (res.status === 200) {
-          //   message.success('Xóa tài khoản thành công');
-          //   setUpdateTableData(!updateTableData);
-          // }
+          if (res.status === 200) {
+            message.success('Xóa tài khoản thành công');
+            setUpdateTableData(!updateTableData);
+          }
         });
       },
     });
