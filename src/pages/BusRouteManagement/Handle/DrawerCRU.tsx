@@ -57,6 +57,7 @@ const DrawerCRU = ({
   const [busStopSelected, setBusStopSelected] = useState<any>([]);
   const [routerGo, setRouterGo] = useState<any>([]);
   const [routerReturn, setRouterReturn] = useState<any>([]);
+  const [activeTab, setActiveTab] = useState<string>('1');
 
   const fetchBusStopData = async () => {
     const res = await getAllBusStop();
@@ -68,7 +69,6 @@ const DrawerCRU = ({
 
   const fetchRouterData = async () => {
     const res = await getDetailRouter(id as string);
-    console.log(res);
     const formatData = {
       ...res,
       busStop: res.outbound_stops,
@@ -87,11 +87,18 @@ const DrawerCRU = ({
         name: '',
       }))
     );
+    setTimeout(() => {
+      setActiveTab('2');
+    }, 200);
+    setTimeout(() => {
+      setActiveTab('1');
+    }, 400);
     form.setFieldsValue(formatData);
     setMapData();
   };
 
   useEffect(() => {
+    form.resetFields();
     fetchBusStopData();
 
     if (open) {
@@ -281,7 +288,7 @@ const DrawerCRU = ({
                 placeholder={['Từ', 'Đến']}
               />
             </Form.Item>
-            <Tabs>
+            <Tabs activeKey={activeTab} onChange={setActiveTab}>
               <Tabs.TabPane tab="Tuyến đi" key="1">
                 {numberBusStop.map((item, index) => (
                   <Flex key={index}>

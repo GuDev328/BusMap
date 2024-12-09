@@ -158,7 +158,10 @@ export const BusStopManagement = () => {
       <DrawerCRU
         setUpdateTableData={setUpdateTableData}
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={() => {
+          setId(undefined);
+          setOpen(false);
+        }}
         id={id}
         isViewMode={isViewMode}
       />

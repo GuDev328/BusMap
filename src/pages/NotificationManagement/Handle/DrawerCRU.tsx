@@ -37,7 +37,8 @@ const DrawerCRU = ({
 }: DrawerCRUProps) => {
   const [form] = Form.useForm();
   useEffect(() => {
-    if (id) {
+    form.resetFields();
+    if (id && open) {
       getDetailNotification(id).then((res: INotification) => {
         form.setFieldsValue({
           ...res,
@@ -45,7 +46,7 @@ const DrawerCRU = ({
         });
       });
     }
-  }, [id, isViewMode]);
+  }, [id, isViewMode, open]);
 
   const handleClose = () => {
     form.resetFields();
